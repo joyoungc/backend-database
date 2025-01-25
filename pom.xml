@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0
+         http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>io.joyoungc</groupId>
+    <artifactId>backend-database</artifactId>
+    <version>0.0.1-SNAPSHOT</version>
+
+    <properties>
+        <maven.compiler.source>8</maven.compiler.source>
+        <maven.compiler.target>8</maven.compiler.target>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <testcontainers.version>1.19.8</testcontainers.version>
+        <testcontainers-jooq-codegen-maven-plugin.version>0.0.4</testcontainers-jooq-codegen-maven-plugin.version>
+        <jooq.version>3.18.25</jooq.version>
+        <mysql-connector-j.version>8.3.0</mysql-connector-j.version>
+    </properties>
+
+    <dependencies>
+        <dependency>
+            <groupId>org.jooq</groupId>
+            <artifactId>jooq</artifactId>
+            <version>${jooq.version}</version>
+        </dependency>
+    </dependencies>
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.testcontainers</groupId>
+                <artifactId>testcontainers-jooq-codegen-maven-plugin</artifactId>
+                <version>${testcontainers-jooq-codegen-maven-plugin.version}</version>
+                <dependencies>
+                    <dependency>
+                        <groupId>org.testcontainers</groupId>
+                        <artifactId>mysql</artifactId>
+                        <version>${testcontainers.version}</version>
+                    </dependency>
+                    <dependency>
+                        <groupId>com.mysql</groupId>
+                        <artifactId>mysql-connector-j</artifactId>
+                        <version>${mysql-connector-j.version}</version>
+                    </dependency>
+                </dependencies>
+                <executions>
+                    <execution>
+                        <id>generate-jooq-sources</id>
+                        <goals>
+                            <goal>generate</goal>
+                        </goals>
+                        <phase>generate-sources</phase>
+                        <configuration>
+                            <database>
+                                <type>MYSQL</type>
+                                <containerImage>mysql:8.0.38</containerImage>
+                                <!-- optional
+                                <username>test</username>
+                                <password>test</password>
+                                -->
+                                <databaseName>app</databaseName>
+                            </database>
+                            <flyway>
+                                <!-- 관리할 스키마 설정 -->
+<!--                                <schemas>-->
+<!--                                    <schema>app</schema>-->
+<!--                                </schemas>-->
+                                <!-- SQL 마이그레이션 파일의 접두어를 "M"으로 설정 -->
+                                <sqlMigrationPrefix>DDL</sqlMigrationPrefix>
+                                <!-- Flyway의 마이그레이션 경로 및 기타 설정 -->
+                                <locations>
+                                    <location>filesystem:src/main/resources/db/migration</location>
+                                </locations>
+                            </flyway>
+                            <!-- Generator parameters -->
+                            <jooq>
+                                <generator>
+                                    <database>
+                                        <includes>.*</includes>
+                                        <excludes>flyway_schema_history</excludes>
+                                        <inputSchema>app</inputSchema>
+                                    </database>
+                                    <target>
+                                        <packageName>io.joyoungc.database</packageName>
+                                        <directory>target/generated-sources/jooq</directory>
+                                    </target>
+                                </generator>
+                            </jooq>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
+
+</project>
