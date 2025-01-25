@@ -67,7 +67,7 @@
 <!--                                    <schema>app</schema>-->
 <!--                                </schemas>-->
                                 <!-- SQL 마이그레이션 파일의 접두어를 "M"으로 설정 -->
-                                <sqlMigrationPrefix>DDL</sqlMigrationPrefix>
+                                <sqlMigrationPrefix>DDL-</sqlMigrationPrefix>
                                 <!-- Flyway의 마이그레이션 경로 및 기타 설정 -->
                                 <locations>
                                     <location>filesystem:src/main/resources/db/migration</location>
